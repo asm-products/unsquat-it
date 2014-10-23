@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" >
+  <channel>
+    <title>Union Square Ventures</title>
+    <atom:link href="http://{{ settings.get('base_url') }}/feed/" rel="self" type="application/rss+xml" />
+    <link>http://{{ settings.get('base_url') }}</link>
+    <description></description>
+    <language>en-US</language>
+    <sy:updatePeriod>hourly</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+    <generator>https://github.com/unionsquareventures/theconversation</generator>
+    {% for post in posts %}
+      <item>
+        <title>{{ post['title'] }}</title>
+        <link>http://usv.com/posts/{{ post['slug'] }}</link>
+        <pubDate>{{ post['date_created'] }}</pubDate>
+        <dc:creator>@{{ post['user']['username'] }}</dc:creator>
+        <guid isPermaLink="true">http://usv.com/posts/{{ post['slug'] }}</guid>
+        <description><![CDATA[Link: <a href="{{ post['url'] }}">{{post['url']}}</a> <br /> <br />@{{ post['user']['username'] }}: <br /><br />{{ post['body_truncated'] }}]]></description>
+        <atom:content type="html"><![CDATA[{{ post['body_html'] }}]]></atom:content>
+      </item>
+    {% end %}
+  </channel>
+</rss>

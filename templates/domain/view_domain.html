@@ -1,0 +1,26 @@
+{% extends "../base.html" %}
+
+{% block nav %}
+	<li class="active">{{ domain.name }}</li>
+{% end %}
+
+{% block content %}
+
+<h1 class="page-title">{{ domain.name }}</h1>
+
+<span class="text-muted">added by {{ domain.user.user.username }} on {{ domain.date_created.strftime("%m/%d/%Y") }}</span>
+
+<div class="well">
+	{{ domain.description }}
+</div>
+
+XX views<br />
+XX unpublished unsquatit ideas from XX users<br /><br />
+
+
+
+<p><a href="{{ domain.unsquatitlink() }}">Unsquat it!</a></p>
+
+<p><a href="{{ domain.editlink() }}">edit</a></p>
+
+{% end %}

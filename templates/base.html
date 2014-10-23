@@ -1,0 +1,78 @@
+{% if 'body_class' not in locals() %}
+  {% set body_class = "" %}
+{% end %}
+{% from urlparse import urlparse %}
+{% from lib import template_helpers %}
+{% import settings %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>{% block title %}{% end %}{{ settings.get('site_title') }}</title>
+  <meta name="description" content="{{ settings.get('site_intro') }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="{{ static_url("img/favicon.png")  }}" type="image/png" />
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500,100' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Fira+Mono:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="{{ static_url("css/bootstrap.min.css") }}" />
+  <link rel="stylesheet" href="{{ static_url("css/style.css") }}" />
+
+    <script type="text/javascript">
+    // We will use the USV object to hold any settings 
+    // or App-level variables/functions 
+    if (typeof UNSQ === "undefined"){
+      var UNSQ = {}
+    }
+    {% if user_obj %}
+    UNSQ.user_obj = {
+      user : {
+        username: "{{ user_obj.user.username }}",
+        fullname: "{{ user_obj.user.fullname }}",
+        profile_image_url_https: "{{ user_obj.user.profile_image_url_https }}",
+        permalink: "{{ user_obj.user.permalink() }}"
+      }
+    }
+    {% end %}
+  </script>
+  {% block css %}{% end %}
+</head>
+
+<body data-menu-position="closed" class="{{ body_location_class }} {% block body_class %}{% end %} {% if current_user in settings.get('staff') %}staff{% end %}">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+          <div id="header" class="clearfix">
+            <ul id="nav" class="breadcrumb pull-left">
+              <li><a href="/">{{ settings.get('site_title' )}}</a></li>
+              {% block nav %}{% end %}
+            </ul>
+            <div id="login" class="pull-right" style="padding:8px 15px">
+              {% if current_user %}
+              hey, {{ current_user }}! <a href="/auth/logout?next={{ current_path }}">logout</a>
+              {% else %}
+                <a href="/auth/twitter?next={{ current_path }}">login</a>
+              {% end %}
+            </div>
+          </div>
+          <div id="content" style="clear:both">
+                {% if show_flash %}
+                  <div class="alert alert-info">
+                    {% raw flash_text %}
+                  </div>
+                {% end %}
+                {% block content %}{% end %}
+          </div>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container -->
+  {% include snippets/global-js-tags.html %}
+  {% block javascript %}{% end %}
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% extends "../base.html" %}
+
+{% block nav %}
+	<li class="active"><a href="{{ domain.permalink() }}">{{ domain.name }}</a></li>
+	<li class="active">edit</li>
+{% end %}
+
+{% block content %}
+
+<h1 class="page-title">{{ domain.name }}</h1>
+
+  <div class="row">
+	<div class="col-sm-10 col-sm-offset-1">
+	  
+	  <h2 style="margin-top:0">{% if mode == "edit" %}Edit!{% else %}Add a domain!{% end %}</h2>
+
+
+		<form id="" class="form-horizontal submit-post-form" role="form" action="" method="POST">
+			{% raw xsrf_form_html() %}
+
+		  <div class="form-group">
+			  <label for="name" class="col-xs-3 control-label">Name</label>
+			  <div class="col-xs-9">
+				  <input id="name" name="name" type="text" class="form-control" placeholder="e.g., nickgrossman.is" required="" value="{{ domain.name }}">
+			  </div>
+		  </div>
+		    
+		   <div class="form-group">
+		   	  <label for="description" class="col-xs-3 control-label">Short Description</label>
+		   	  <div class="col-xs-9">
+		   		  <textarea id="description" name="description" class="form-control" placeholder="e.g., is a real-time information network.">
+		   		  	{{ domain.description }}
+			   		</textarea>
+		   		  <span class="text-muted"></span>
+		   	  </div>
+		     </div>
+	    
+	        <div class="form-group">
+	        	  <label for="status" class="col-xs-3 control-label">Status</label>
+	        	  <div class="col-xs-9">
+		        	  <select class="form-control" name="status">
+			        	  <option value="draft" {% if domain.status == "draft" %}selected{% end %}>Draft</option>
+			        	  <option value="current" {% if domain.status == "current" %}selected{% end %}>Current</option>
+			        	  <option value="exited" {% if domain.status == "exited" %}selected{% end %}>Exited</option>
+			          </select>
+	        	  </div>
+	          </div>
+		     			<div class="form-group">
+				<div class="col-xs-offset-1 col-xs-9">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{% end %}

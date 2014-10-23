@@ -1,0 +1,31 @@
+{% extends "../base.html" %}
+
+{% block nav %}
+	<li class="active"><a href="{{ domain.permalink() }}">{{ domain.name }}</a></li>
+	<li class="active">unsquat it!</li>
+{% end %}
+
+{% block content %}
+
+<h1 class="page-title">unsquat {{ domain.name }}</h1>
+
+<div class="well">
+	<form class="form">
+	  <div class="form-group">
+	    <label for="exampleInputEmail1"><h3>OK, what's your big plan for {{ domain.name }}?</h3></label>
+	    <textarea class="form-control" placeholder="It's like Uber for Rainbows"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    <label for="exampleInputEmail1"><h3>What makes you think you can get it done?</h3></label>
+	    <textarea class="form-control" placeholder="It's like Uber for Rainbows"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    <button class="btn">Go</button>
+	  </div>
+
+	</form>
+</div>
+
+{% end %}

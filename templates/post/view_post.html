@@ -1,0 +1,212 @@
+{% extends "../base.html" %}
+
+{% block body_class %}conversation single{% end %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+	  <div class="col-lg-3">
+		[ TOPIC STUFF?  Or maybe nothing for now -- just the post + thread ]
+
+		{% if current_user_can_edit %}
+			<p><a class="btn btn-block" href="{{ post.editlink() }}">Edit this post</a></p>
+		{% end %}
+	  </div>   
+	           
+	  <div class="col-sm-9">
+		  	<div class="post">
+			  	<div class="post-byline">
+			  	 	<p>
+				  	 	<a href="{{ post.user.permalink() }}">{{ post.user.fullname }}</a> &nbsp;
+				  		<span class="text-muted">3 hours ago</span>
+				  	</p>
+			  	 </div>
+			  	 <div class="post-avatar">
+				  	 <a href="{{ post.user.permalink() }}">
+					  	 <img src="{{ post.user.profile_image_url_https }}" class="avatar" />
+					 </a>
+				 </div>
+				  	 
+			    <h1 class="post-title">{{ post.title }}</h1>
+			    {% if post.url %}
+			    <h6 class="post-url">{{ urlparse(post.url).netloc }}</h6>
+			    {% end %}
+			    <div class="post-content">
+			  	  {% raw post.body_raw %}
+			    </div>
+			  <div class="comment-box">
+				  
+			      <ul id="comments" class="comments"></ul>
+			      {% if current_user %}			      
+			    <div class="form-group" id="submit-comment-form">
+				    <img class="avatar" src="{{ user_obj.user.profile_image_url_https }}" />
+			    	<textarea id='messageInput' class="form-control" placeholder='Join the discussion...'></textarea>
+				    <div id="submit-button-container" style="display:none">
+					    <button class="btn btn-default" id="btn-submit-comment" >Add comment</button>
+						<span class="text-muted">(or press command-enter to submit)</span>
+					</div>
+			    </div><!-- /.form-group -->
+			      {% else %}
+			      	<a href="/auth/twitter" class="btn btn-info">log in w twitter to comment</a>
+			      {% end %}
+			  </div>	
+		  	</div><!-- /.post -->
+	  	</div>          
+	</div>
+	{% if current_user_can('manage_comments') %}
+		<h3>Admin: Mongodb comments</h3>
+		<ul>
+			{% for comment in comments %}
+			<li>
+				{{ comment.body_html }} &bull; 
+				{{ comment.user.fullname }}  &bull;
+				<a href="{{ settings.get('firebase_url') }}/posts/{{ post.id }}/{{ comment.firebase_id }}" target="_blank">{{ comment.firebase_id }}</a>  &bull; 
+				{{ comment.date_created.strftime("%m/%d/%Y @ %H:%M:%S") }}
+			</li>
+			{% end %}
+		</ul>
+	{% end %}
+</div><!-- /.container -->
+
+
+
+{% end %} 
+
+
+{% block javascript %}
+<script>
+	$('.open-comment-reply').click(function(e){
+      e.preventDefault();
+      $('.comment-reply-form[data-comment-slug="'+ $(this).attr("data-comment-slug") +'"]' ).show()
+    });
+</script>
+<!-- CHAT JAVACRIPT -->
+
+<script type="text/html" id="comment-template">
+	<a data-href="user_permalink" data-title="username">
+		<img class="avatar" data-src="profile_image_url_https" />
+	</a>
+	<div class="comment-meta">		
+		<b><a class="comment-author" data-href="user_permalink" data-content="full_name"></a></b> &nbsp; 
+		<span class="text-muted comment-time" data-content="relative_time"></span>
+	</div>
+	<div class="comment-text" data-content="comment_html"></div>
+	<div class="comment-actions">
+		<a data-href="comment_permalink">Link</a> &nbsp;
+	</div>
+</script>
+
+<script>
+  // CREATE A REFERENCE TO FIREBASE
+  var messagesRef = new Firebase('{{ settings.get('firebase_url') }}/posts/{{ post.id }}');
+
+  // REGISTER DOM ELEMENTS
+  var messageField = $('#messageInput');
+  var messageList = $('#comments');
+  
+  /*messageField.triggeredAutocomplete({
+  	hidden: '#hidden_inputbox',
+  	source: new Array({ "value": "1234", "label": 'Geech'}, {"value": "5312", "label": "Marf"})
+	});*/
+	/*messageField.tinymce({
+	  // Location of TinyMCE script
+	  script_url : '/static/js/tinymce/tinymce.min.js',
+	
+	  // General options
+	  width: '100%',
+	  height: '60px',
+	  statusbar: false,
+	
+	  valid_elements: USV_tinymce_valid_elements,
+	  charcount_max_chars: USV_tinymce_post_char_limit,
+	
+	  // Styling
+	  content_css: "/static/css/tinymce_content.css",
+	  menubar: false,
+	  document_base_url: "/",
+	
+	  // Plugins and toolbar
+	  toolbar: false,
+	});
+	*/
+  
+  //messageField.ClassyEdit();
+  messageField.focus(function(e){
+	 $('#submit-button-container').slideDown(); 
+  });
+  messageField.blur(function(e){
+  	 $('#submit-button-container').slideUp(); 
+    });
+
+  	var submit_comment = function(e) {
+	  //FIELD VALUES
+	  // .replace(/\r?\n/g, '<br /><br />')
+	  var username = USV.user_obj.user.username;
+	  var full_name = USV.user_obj.user.fullname;
+	  var comment_html = messageField.val().replace(/\n/g, "<br>");
+	  var profile_image_url_https = USV.user_obj.user.profile_image_url_https;
+
+	  //SAVE DATA TO FIREBASE AND EMPTY FIELD
+	  response = messagesRef.push({
+		  username: username,
+		  full_name: full_name,
+		  comment_html: comment_html, 
+		  datetime: Date.now(),
+		  profile_image_url_https: profile_image_url_https
+		});
+		
+	  firebase_id = response.path['o'][2];
+	  
+	  if (firebase_id != "") {
+		  // TODO make an ajax call to our own comments DB 
+		    $.ajax("{{ post.add_comment_link() }}", {
+		  		type: 'POST',
+		  		data: {
+		  		  'comment_body_text': comment_html,
+		  		  'firebase_id': firebase_id
+		  		},
+		  		error: function(jqxhr, status, error) {
+		  	  		alert("Could not add comment; an error occurred. Please try again.");
+		  		},
+		  		success: function(data, status, jqxhr) {
+		  		  	console.log(data);
+		  		} /* end success */
+		    }); /* end ajax */
+	  }
+	  messageField.val('');	  
+	}
+
+	// submit form on appropriate events
+  	$('#btn-submit-comment').click(submit_comment);
+   	messageField.keydown(function(e) {
+		if ((event.metaKey || event.ctrlKey) && event.keyCode == 13) {
+			submit_comment()
+		}
+	});
+
+  // Add a callback that is triggered for each chat message.
+  messagesRef.limit(100).on('child_added', function (snapshot) {
+	//GET DATA
+	var data = snapshot.val();
+
+	//CREATE ELEMENTS MESSAGE & SANITIZE TEXT
+	var messageElement = $('<li class="comment">');
+	messageElement.loadTemplate($("#comment-template"),
+		{
+			username: data.username,
+			user_permalink: "/user/" + data.username,
+			full_name: data.full_name,
+			profile_image_url_https: data.profile_image_url_https,
+			relative_time: moment(new Date(data.datetime)).fromNow(),
+			comment_html: data.comment_html
+		});
+
+	//ADD MESSAGE
+	messageList.append(messageElement)
+
+	//SCROLL TO BOTTOM OF MESSAGE LIST
+	messageList[0].scrollTop = messageList[0].scrollHeight;
+  });
+</script>
+{% end %} 

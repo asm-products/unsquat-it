@@ -1,0 +1,98 @@
+{% extends '../base.html' %}
+
+{% block body_class %}conversation{% end %}
+
+{% block content %}
+  <div id="main" role="main">
+
+      {% if posts and len(posts) == 0 %}
+        <p>There are currently no shares for this view available.</p>
+      {% else %}
+
+      <div id="pagination-next-prev"></div>
+      {% end #not settings %}
+      {% if section == "settings" %}
+        
+        {% if msg and msg == "updated" %}
+          <div class="alert alert-success low-pro">
+            Updated!
+          </div>
+        {% end %}
+        
+        {% if msg and msg == "twitter-thanks" %}
+          <div class="alert alert-info low-pro">
+            Great!  Now can update your settings and be off to the races.
+          </div>
+        {% end %}
+        
+      <h3 style="margin-top:0">Connections</h3>
+        
+      <table class="table">
+        <tr class="complete">
+          <th class="step">
+            <span class="glyphicon glyphicon-ok"></span>
+          </th>
+          <th>
+            {% if user.user %}
+              <img src="/static/img/connect-twitter-active.png" /> &nbsp;
+            {% else %}
+              <img src="/static/img/connect-twitter-inactive.png" /> &nbsp;
+            {% end %}
+          </th>
+          <td>
+            @{{ current_user }}
+          </td>
+          <td></td>
+          <td class="text-muted">(currently this cannot be changed)</td>
+        </tr>
+        
+
+      </table>
+      
+      <form id="submit-form" class="" action="/auth/email/" method="POST">
+      <table class="table">
+      {% module xsrf_form_html() %}
+      {% if user.email_address %}
+      <tr class="complete">
+      {% else %}
+      <tr class="">
+      {% end %}
+        <th>Email</th>
+        <td colspan="2"><input type="text" class="form-control" name="email" value="{{ user.email_address or "" }}" />
+          {% if not user.email_address %}
+            <div class="alert alert-danger low-pro">
+              &uarr; Please add your email address.
+            </div>
+          {% end %}
+        </td>
+      </tr>    
+      </table>
+      <p><input type="submit" value="Update" class="btn btn-default" /></p>
+      </form>
+      
+      {% end %}
+
+  </div>
+{% end %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      {% if current_user %}
+        $('#submit-modal .submit').show();
+        {% if current_user in settings.get('staff') %}
+          $('#submit-modal .login').hide();
+          $('#submit-modal .submit-staff').show();
+          $('a.mute').click(function(e) {
+            e.preventDefault();
+            if (confirm("are you sure?")) {
+              window.location = this.href;
+            }
+          })
+        {% else %}
+          $('#submit-modal .login').hide();
+        {% end %}
+      {% end %}
+    }); 
+  </script>
+{% end %}

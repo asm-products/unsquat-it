@@ -1,0 +1,57 @@
+{% if user_obj %}
+<form action="{{ post.add_comment_link() }}" role="form" method="POST" class="comment-form form clearfix">
+	<a href="{{ user_obj.user.permalink() }}" title="@{{ user_obj.user.username }}">
+		<img class="avatar" src="{{ user_obj.user.profile_image_url }}" />
+	</a>
+	{% raw xsrf_form_html() %}
+	<div class="tinymce-textbox">
+		<textarea class="form-control" id="comment_body_text" name="comment_body_text" rows="3"></textarea>
+	</div>
+	<div class="form-group">
+		<div class="pull-right" style="margin-top:10px">
+			<button type="submit" class="btn btn-default">Leave a comment</button>
+		</div>
+	</div>
+</form>
+{% else %}
+<p><a href="/auth/twitter?next={{ post.permalink() }}" class="btn btn-lg btn-info">Log in with Twitter to comment</a></p>
+{% end %}
+<ul class="comments">
+	{% for c in comments %}
+	<li class="comment depth-{{ c.depth }}">
+		<a href="{{ c.user.permalink() }}" title="@{{ c.user.username }}">
+			<img class="avatar" src="{{ c.user.profile_image_url }}" />
+		</a>
+		<div class="comment-meta">		
+			<b><a class="comment-author" href="{{ c.user.permalink() }}">{{ c.user.fullname }}</a></b> &nbsp; 
+			{% if c.parent_comment %}
+			<span class="replying-to">
+				<span class="glyphicon glyphicon-share-alt"></span> 
+				{{ c.parent_comment.user.fullname }} &nbsp;
+			</span>
+			{% end %}
+			<span class="text-muted comment-time">{{ template_helpers.pretty_date(c.date_created) }}</span>
+		</div>
+		<div class="comment-text">{% raw c.body_raw %}</div>
+		
+		<div class="comment-actions">
+			<a href="{{ c.permalink() }}">Link</a> &nbsp;
+			<a class="open-comment-reply" href="#" data-comment-slug="{{ c.slug }}">Reply</a>
+		</div>
+		<div class="comment-reply-form" data-comment-slug="{{ c.slug }}" style="display:none">
+			<form action="{{ post.add_comment_link() }}" role="form" method="POST" class="form clearfix">
+				{% raw xsrf_form_html() %}
+				<input type="hidden" name="parent_comment_id" value="{{ c.id }}" />
+				<div class="tinymce-textbox">
+					<textarea class="form-control" id="comment_body_text" name="comment_body_text" rows="3"></textarea>
+				</div>
+				<div class="form-group">
+					<div class="pull-right" style="margin-top:10px">
+						<button type="submit" class="btn btn-default">Reply</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</li>
+	{% end %}
+</ul>

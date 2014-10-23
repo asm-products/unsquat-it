@@ -1,0 +1,93 @@
+{% if 'submit_post' not in locals() %}
+{% set submit_post = blank_post %}
+{% end %}
+<div class="submit-post-form-wrapper" style="display:none">
+	<form id="" class="container form-horizontal submit-post-form clearfix" role="form" action="/posts/create_update" method="POST">
+		<div class="row">
+		  <input type="hidden" name="slug" value="{{ submit_post.slug or "" }}" />
+	  {% raw xsrf_form_html() %}
+	 	<div class="col-sm-4">
+		  <div class="form-group">
+			  <input id="post_title" name="title" type="text" class="form-control" placeholder="Title" required="" value="{{ submit_post.title or "" }}">
+			</div>
+			<div class="form-group">
+				<input id="post_url" name="url" type="text" placeholder="Link (optional)" value="{{ submit_post.url or "" }}" class="form-control">
+					{% if 'dups' in globals() and dups %}
+					<div class="alert alert-danger" style="color: #333">
+						<p style="margin-top:0"><strong>This URL might have already been submitted.</strong> Does it match one of these?</p>
+						<ul>
+							{% for dupe in dups %}
+							<li><b><a style="color: #000;" href="{{ dupe.permalink() }}" target="_blank">{{ dupe.title }}</a></b><br />
+								<a class="text-muted" href="{{ dupe.url }}">{{ dupe.url }}</a></li>
+							{% end %}
+						</ul>
+						<input type="hidden" name="bypass_dup_check" id="bypass_dup_check" value="true" />
+					</div>
+					{% end %}
+			</div>
+			
+			<div class="form-group">
+				<div class="topic-chooser">
+					<select id="primary-topics" name="primary_topic" class="form-control">
+							<option value="">&mdash; Topic &mdash;</option>
+						{% for topic in featured_topics %}
+							{% if 'current_topic' in globals() and topic == current_topic %}
+							<option value="{{ topic.slug }}" selected="true">{{ topic.name }}</option>
+							{% else %}
+							<option value="{{ topic.slug }}">{{ topic.name }}</option>
+							{% end %}
+						{% end %}
+						{% if 'current_topic' in globals() and current_topic not in featured_topics %}
+							<option value="{{ current_topic.slug }}" selected="true">{{ current_topic.name }}</option>
+						{% end %}
+							<option value="+other+">Other...</option>
+					</select>
+					<div id="secondary-topics" style="display:none">
+						<input name="secondary_topic" class="typeahead form-control" type="text" placeholder="Add or pick a topic">
+					</div>
+				</div>
+			</div> 
+		</div><!-- /.col -->
+		<div class="col-sm-6">
+			<div class="form-group">
+				<div class="tinymce-textbox">
+					<textarea type="text" class="form-control" id="post_body_raw" name="body_raw">
+						{% raw submit_post.body_raw or "" %}
+					</textarea>
+				</div>
+			</div><!-- /.form-group -->
+		</div><!-- /.col -->
+		<div class="col-sm-2">
+			 {% if current_user in settings.get('staff') %}
+				<div class="form-group">
+					<div class="col-xs-11 col-xs-offset-1">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" id="post_featured" name="featured" value="true" {{ 'checked' if submit_post.featured else '' }}/> Featured?
+							</label>
+						</div>
+					</div>
+				</div>
+					{% try %}
+						{% if not p['date_created'] %} 
+					<div class="form-group">
+						<div class="col-xs-11 col-xs-offset-1 hidden-xs">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="post_deleted" name="deleted" value="true" {{ 'checked' if submit_post.deleted else '' }} /> Deleted?
+								</label>
+							</div>
+						</div>
+						</div>
+						{% end %}
+					{% except %}
+					{% end %}
+				{% end %}
+				<div class="form-group">
+						<button type="submit" class="btn btn-lg btn-primary">Submit Post</button>
+						<p class="text-muted">or <a href="#" data-usv-action="hide-post-form">cancel</a></p>
+				</div>
+			</div><!-- /.col -->
+		</div><!-- /.row -->
+	</form>
+</div>

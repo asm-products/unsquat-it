@@ -1,0 +1,47 @@
+<div class="user">
+    <img class="avatar" src="{{ post.user.profile_image_url_https }}" alt="thumbnail">
+</div>
+
+<div class="meta-top meta" data-status="closed" data-post-url="/posts/{{ post.slug }}">
+	  <a class="username-link" href="/user/{{ post.user.username }}">@{{ post.user.username }}</a>
+
+	  <span class="time"><a href="{{ post.permalink() }}" ><span class="glyphicon glyphicon-link" style="margin: 0;font-size: 90%"></span> {{ post.date_created.strftime("%I:%M %p") }}</a></span>
+
+	  <span class="time-search" style="display:none"><a href="{{ post.permalink() }}" ><span class="glyphicon glyphicon-link" style="margin: 0;font-size: 90%"></span> {{ post.date_created.strftime("%m/%d/%Y") }}</a></span>
+
+	  <a class="dsq-comment-count comment-count {{ 'zero' if post.comment_count() == 0 else "" }}" title="Go to discussion"
+	data-disqus-identifier="{{ post.id }}" href="{{ post.permalink() }}">
+	<span class="glyphicon glyphicon-comment"></span>
+	<span class="comment-count-label">{{ post.comment_count() if post.comment_count() > 0 else '' }}</span></a>
+</div><!-- /.meta-top -->
+  
+<div class="meta clearfix">
+    {% if len(post.tags) > 0 %}
+    <div class="tags pull-right">
+      {% for i, t in enumerate(post.tags) %}
+        {% if i < 2 %}
+        <a href="/tagged/{{ t }}">#{{ t }}</a> 
+        {% end %}
+      {% end %}
+    </div><!-- /.tags -->
+    {% end %}
+</div><!-- /.meta -->
+
+<div class="link" data-post-url="{{ post.permalink() }}">
+	  {% include bumpit_snippet.html %}
+	  {% if post.url %}
+	    <a class="title" href="{{ post.url }}" rel="nofollow" target="_blank">{{ post.title }}</a>
+	    <br class="xs-break" style="display:none" />
+	    <div class="source">{{ urlparse(post.url).netloc }}</div>
+
+	  {% else %}
+	    <a class="title" href="{{ post.permalink() }}" target="_blank">{{ post.title }}</a>
+	    <div class="source">usv.com</div>
+	  {% end %}
+	  <span class="xs-author">&ndash; @{{ post.user.username }}</span>
+	  {% if current_user_can('view_post_sort_score') %}
+	  <span class="sort_score">{{ post.disqus_comment_count }}</span>
+	  {% end %}
+</div><!-- /.link -->
+
+
