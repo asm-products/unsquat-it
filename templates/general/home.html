@@ -5,28 +5,25 @@
 
 <p>Remember that awesome domain you bought that night, for that project that was going to change the world? Yep, that's the one -- the one sitting in your godaddy account gathering dust.</p>
 
-<p>It's OK -- you don't have to just let it sit there making you feel guilty for never doing anything.  </p>
+<p>Don't fret!  Now there's a way to put it to good use.</p>
 
-<p>Now, there's a way to make sure that domain gets the highest and best use.</p>
+<br />
 
-<div class="row">
-	<div class="col-sm-4">
-		<h2>All domains</h2>
-		<ul>
-			{% for domain in domains %}
-			<li>
-				<a href="{{ domain.permalink() }}">{{ domain.name }}</a><br />
-				<span class="text-muted">added {{ domain.date_created.strftime("%m/%d/%Y") }}</span>
-			</li>	
-			{% end %}
-		</ul>
-	</div>
-	<div class="col-sm-8">
-		<h2>Ideas</h2>
-		<ul>
-			<li>go here</li>
-		</ul>
-	</div>
-</div<!-- /.row -->
+<div class="unsquat-it">
+	<p><a href="/go" class="btn btn-default btn-large">Unsquat a domain today</a></p>
+	<p><a class="text-muted" href="#">how it works</a></p>
+</div>
+
+<h3>These awesome domains are looking for an awesome project:</h3>
+<ul class="domains">
+	{% for domain in domains %}
+	<li class="domain">
+		<div class="domain-info">
+			<h3><a href="{{ domain.permalink() }}">{{ domain.name }}</a></h3>
+			<span class="text-muted">added {{ domain.date_created.strftime("%m/%d/%Y") }} by {{ domain.user_info.user.username }}</span>
+		</div>
+	</li>	
+	{% end %}
+</ul>
 
 {% end %}

@@ -6,9 +6,9 @@
 
 {% block content %}
 
-<h1 class="page-title">{{ domain.name }}</h1>
+<h1 class="page-title"><a href="/">Unsquat.it</a> &rarr; {{ domain.name }}</h1>
 
-<span class="text-muted">added by {{ domain.user.user.username }} on {{ domain.date_created.strftime("%m/%d/%Y") }}</span>
+<span class="text-muted">added by {{ domain.user_info.user.username }} on {{ domain.date_created.strftime("%m/%d/%Y") }}</span>
 
 <div class="well">
 	{{ domain.description }}

@@ -8,7 +8,7 @@ from lib import userdb
 
 class Domain(Document):
   name = StringField(required=True, default="")
-  user = ReferenceField('UserInfo')
+  user_info = ReferenceField('UserInfo')
   status = StringField(default="")
   description = StringField(default="")
   date_created = DateTimeField(default=datetime.now())

@@ -18,9 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="shortcut icon" href="{{ static_url("img/favicon.png")  }}" type="image/png" />
   <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500,100' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Fira+Mono:400,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="{{ static_url("css/bootstrap.min.css") }}" />
   <link rel="stylesheet" href="{{ static_url("css/style.css") }}" />
 
@@ -49,11 +53,16 @@
       <div class="row">
         <div class="col-sm-8 col-sm-offset-2">
           <div id="header" class="clearfix">
-            <ul id="nav" class="breadcrumb pull-left">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="nickgrossman" data-size="">Tweet</a>
+
+            <a href="http://news.ycombinator.com/submit" class="hn-share-button">Vote on HN</a>
+
+            <script type="text/javascript" src="//www.redditstatic.com/button/button1.js"></script>
+            <!--<ul id="nav" class="breadcrumb pull-left">
               <li><a href="/">{{ settings.get('site_title' )}}</a></li>
               {% block nav %}{% end %}
-            </ul>
-            <div id="login" class="pull-right" style="padding:8px 15px">
+            </ul>-->
+            <div id="login" class="pull-right">
               {% if current_user %}
               hey, {{ current_user }}! <a href="/auth/logout?next={{ current_path }}">logout</a>
               {% else %}

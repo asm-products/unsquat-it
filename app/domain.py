@@ -2,12 +2,15 @@ import app.basic
 from lib import domainsdb
 from slugify import slugify
 import tornado.web
+from lib.domainsdb import Domain
+from lib import userdb
 
 #################
 ### Add a domain
 ### /gp
 #################
 class NewDomain(app.basic.BaseHandler):
+	@tornado.web.authenticated
 	def get(self):
 		domain = domainsdb.Domain()
 		self.render('domain/edit_domain.html', domain=domain, mode="new")
@@ -17,9 +20,11 @@ class NewDomain(app.basic.BaseHandler):
 		domain_dict['name'] = self.get_argument('name', '')
 		domain_dict['description'] = self.get_argument('description', '')
 		domain_dict['status'] = self.get_argument('status', '')
-		domain = domainsdb.insert_domain(domain_dict)
+		new_domain = Domain(**domain_dict)
+		new_domain.user_info = userdb.get_user_by_screen_name(self.current_user)
+		new_domain.save()
 		self.set_secure_cookie('flash', 'domain added!')
-		self.redirect(domain.permalink())
+		self.redirect(new_domain.permalink())
 
 #################
 ### Edit a Domain
